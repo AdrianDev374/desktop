@@ -165,4 +165,10 @@ return [
      * Custom PHP binary path.
      */
     'binary_path' => env('NATIVEPHP_PHP_BINARY_PATH', null),
+
+    /**
+     * Actions to run when the application is closing.
+     * Each action should be a callable that accepts no arguments.
+     */
+    'closing_actions' => [],
 ];

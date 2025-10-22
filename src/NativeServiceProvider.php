@@ -25,10 +25,12 @@ use Native\Desktop\Contracts\Shell as ShellContract;
 use Native\Desktop\Contracts\WindowManager as WindowManagerContract;
 use Native\Desktop\DataObjects\QueueConfig;
 use Native\Desktop\Drivers\Electron\ElectronServiceProvider;
+use Native\Desktop\Events\App\ApplicationClosing;
 use Native\Desktop\Events\EventWatcher;
 use Native\Desktop\Exceptions\Handler;
 use Native\Desktop\GlobalShortcut as GlobalShortcutImplementation;
 use Native\Desktop\Http\Middleware\PreventRegularBrowserAccess;
+use Native\Desktop\Listeners\ApplicationClosingListener;
 use Native\Desktop\Logging\LogWatcher;
 use Native\Desktop\PowerMonitor as PowerMonitorImplementation;
 use Native\Desktop\Shell as ShellImplementation;
@@ -135,6 +137,11 @@ class NativeServiceProvider extends PackageServiceProvider
         }
 
         app(EventWatcher::class)->register();
+
+        $this->app['events']->listen(
+            ApplicationClosing::class,
+            ApplicationClosingListener::class,
+        );
 
         $this->rewriteStoragePath();
 

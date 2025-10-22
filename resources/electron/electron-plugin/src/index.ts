@@ -1,25 +1,25 @@
-import CrossProcessExports from "electron";
-import { app, session, powerMonitor } from "electron";
-import { ChildProcessWithoutNullStreams } from "child_process";
-import { initialize } from "@electron/remote/main/index.js";
+import CrossProcessExports, {app, powerMonitor, session} from "electron";
+import {ChildProcessWithoutNullStreams} from "child_process";
+import {initialize} from "@electron/remote/main/index.js";
 import state from "./server/state.js";
-import { electronApp, optimizer } from "@electron-toolkit/utils";
+import {electronApp, optimizer} from "@electron-toolkit/utils";
 import {
-  retrieveNativePHPConfig,
-  retrievePhpIniSettings,
-  runScheduler,
-  killScheduler,
-  startAPI,
-  startPhpApp,
+    killScheduler,
+    retrieveNativePHPConfig,
+    retrievePhpIniSettings,
+    runScheduler,
+    startAPI,
+    startPhpApp,
 } from "./server/index.js";
-import { notifyLaravel } from "./server/utils.js";
-import { resolve } from "path";
-import { stopAllProcesses } from "./server/api/childProcess.js";
+import {notifyLaravel} from "./server/utils.js";
+import {resolve} from "path";
+import {stopAllProcesses} from "./server/api/childProcess.js";
 import ps from "ps-node";
 import killSync from "kill-sync";
 
 // Workaround for CommonJS module
 import electronUpdater from 'electron-updater';
+
 const { autoUpdater } = electronUpdater;
 
 class NativePHP {
@@ -62,21 +62,13 @@ class NativePHP {
     });
 
     app.on("window-all-closed", () => {
-      if (process.platform !== "darwin") {
-        app.quit();
-      }
+      notifyLaravel("events", {
+        event: "\\Native\\Desktop\\Events\\App\\ApplicationClosing",
+        payload: [],
+      });
     });
 
-    app.on("before-quit", () => {
-      if (this.schedulerInterval) {
-          clearInterval(this.schedulerInterval);
-      }
-
-      // close all child processes from the app
-      stopAllProcesses();
-
-      this.killChildProcesses();
-    });
+    app.on("before-quit", () => {});
 
     // Default open or close DevTools by F12 in development
     // and ignore CommandOrControl + R in production.
